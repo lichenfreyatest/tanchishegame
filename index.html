@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>🐍 贪吃蛇大作战</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center overflow-hidden select-none" id="app-body">
+  
+  <!-- 开始界面 -->
+  <div id="start-screen" class="game-panel flex flex-col items-center justify-center gap-6 p-8 rounded-3xl shadow-2xl max-w-lg w-full mx-4 z-10">
+    <div class="text-6xl mb-2 animate-bounce-slow">🐍</div>
+    <h1 class="game-title text-4xl md:text-5xl font-black text-center">贪吃蛇大作战</h1>
+    <p class="text-gray-500 text-lg text-center">经典街机游戏 · 卡通风格</p>
+    
+    <!-- 难度选择 -->
+    <div class="w-full mt-4">
+      <p class="text-center text-gray-600 font-bold mb-3 text-lg">🎮 选择难度</p>
+      <div class="flex gap-3 justify-center flex-wrap">
+        <button class="difficulty-btn active" data-speed="150" data-label="简单">
+          <span class="diff-emoji">🌱</span>
+          <span class="diff-text">简单</span>
+        </button>
+        <button class="difficulty-btn" data-speed="100" data-label="普通">
+          <span class="diff-emoji">⚡</span>
+          <span class="diff-text">普通</span>
+        </button>
+        <button class="difficulty-btn" data-speed="65" data-label="困难">
+          <span class="diff-emoji">🔥</span>
+          <span class="diff-text">困难</span>
+        </button>
+        <button class="difficulty-btn" data-speed="40" data-label="地狱">
+          <span class="diff-emoji">💀</span>
+          <span class="diff-text">地狱</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 音效开关 -->
+    <div class="flex items-center gap-4 mt-2">
+      <label class="flex items-center gap-2 cursor-pointer sound-toggle">
+        <input type="checkbox" id="sound-toggle" checked class="hidden">
+        <span class="toggle-track">
+          <span class="toggle-thumb"></span>
+        </span>
+        <span class="text-gray-600 font-medium" id="sound-label">🔊 音效开启</span>
+      </label>
+    </div>
+
+    <button id="start-btn" class="start-btn mt-4 px-10 py-4 text-xl font-bold rounded-2xl shadow-lg transition-all duration-300 hover:scale-105 active:scale-95">
+      🚀 开始游戏
+    </button>
+
+    <div class="text-sm text-gray-400 mt-2 text-center">
+      ⌨️ 方向键/WASD控制 · 📱 支持触屏滑动
+    </div>
+  </div>
+
+  <!-- 游戏界面 -->
+  <div id="game-screen" class="hidden flex flex-col items-center gap-4 w-full max-w-2xl mx-4 z-10">
+    <!-- 顶部信息栏 -->
+    <div class="game-hud w-full flex items-center justify-between px-4 py-3 rounded-2xl shadow-lg">
+      <div class="flex items-center gap-2">
+        <span class="text-2xl">🏆</span>
+        <span class="text-lg font-bold text-yellow-600" id="score-display">0</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-lg" id="difficulty-label">🌱 简单</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-2xl">📏</span>
+        <span class="text-lg font-bold text-blue-600" id="length-display">3</span>
+      </div>
+    </div>
+
+    <!-- 游戏画布 -->
+    <div class="canvas-wrapper rounded-2xl shadow-2xl overflow-hidden relative">
+      <canvas id="game-canvas"></canvas>
+      <!-- 暂停覆盖层 -->
+      <div id="pause-overlay" class="hidden absolute inset-0 bg-black/40 flex items-center justify-center rounded-2xl backdrop-blur-sm">
+        <div class="text-white text-center">
+          <div class="text-6xl mb-4">⏸️</div>
+          <p class="text-2xl font-bold">游戏暂停</p>
+          <p class="text-sm mt-2 opacity-75">按空格键继续</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部控制栏 -->
+    <div class="flex gap-3 w-full justify-center">
+      <button id="pause-btn" class="control-btn px-6 py-2 rounded-xl font-bold">⏸️ 暂停</button>
+      <button id="restart-btn" class="control-btn px-6 py-2 rounded-xl font-bold">🔄 重新开始</button>
+      <button id="back-btn" class="control-btn px-6 py-2 rounded-xl font-bold">🏠 返回</button>
+    </div>
+
+    <!-- 移动端虚拟方向键 -->
+    <div id="mobile-controls" class="md:hidden mt-2">
+      <div class="dpad-container">
+        <button class="dpad-btn dpad-up" data-dir="up">▲</button>
+        <button class="dpad-btn dpad-left" data-dir="left">◀</button>
+        <button class="dpad-btn dpad-center">🐍</button>
+        <button class="dpad-btn dpad-right" data-dir="right">▶</button>
+        <button class="dpad-btn dpad-down" data-dir="down">▼</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 游戏结束弹窗 -->
+  <div id="gameover-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 backdrop-blur-sm">
+    <div class="gameover-panel p-8 rounded-3xl shadow-2xl max-w-sm w-full mx-4 text-center flex flex-col items-center gap-4">
+      <div class="text-6xl animate-bounce-slow">😵</div>
+      <h2 class="text-3xl font-black text-red-500">游戏结束!</h2>
+      <div class="w-full bg-gray-100 rounded-2xl p-4 space-y-2">
+        <div class="flex justify-between items-center">
+          <span class="text-gray-500">🏆 本次得分</span>
+          <span class="text-2xl font-black text-yellow-600" id="final-score">0</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-gray-500">📏 蛇身长度</span>
+          <span class="text-2xl font-black text-blue-600" id="final-length">3</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-gray-500">🥇 最高纪录</span>
+          <span class="text-2xl font-black text-purple-600" id="best-score">0</span>
+        </div>
+      </div>
+      <div class="flex gap-3 w-full mt-2">
+        <button id="retry-btn" class="flex-1 py-3 rounded-xl font-bold text-lg start-btn hover:scale-105 active:scale-95 transition-all">🔄 再来一局</button>
+        <button id="home-btn" class="flex-1 py-3 rounded-xl font-bold text-lg control-btn hover:scale-105 active:scale-95 transition-all">🏠 返回首页</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 背景装饰 -->
+  <div class="bg-decoration" aria-hidden="true">
+    <div class="bg-circle bg-circle-1"></div>
+    <div class="bg-circle bg-circle-2"></div>
+    <div class="bg-circle bg-circle-3"></div>
+  </div>
+
+  <!-- 页脚 -->
+  <footer class="fixed bottom-2 left-0 right-0 text-center z-10">
+    <p>由 <a href="https://with.woa.com/" style="color: #8A2BE2;" target="_blank">With</a> 通过自然语言生成</p>
+  </footer>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>

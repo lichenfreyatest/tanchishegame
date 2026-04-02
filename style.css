@@ -1,0 +1,363 @@
+/* ===== 全局基础样式 ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(135deg, #e0f7fa 0%, #f3e5f5 50%, #fff3e0 100%);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* ===== 背景装饰 ===== */
+.bg-decoration {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.bg-circle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.15;
+  animation: float 20s ease-in-out infinite;
+}
+
+.bg-circle-1 {
+  width: 400px;
+  height: 400px;
+  background: linear-gradient(135deg, #4fc3f7, #7c4dff);
+  top: -100px;
+  right: -100px;
+  animation-delay: 0s;
+}
+
+.bg-circle-2 {
+  width: 300px;
+  height: 300px;
+  background: linear-gradient(135deg, #ff6f00, #ff4081);
+  bottom: -80px;
+  left: -80px;
+  animation-delay: -7s;
+}
+
+.bg-circle-3 {
+  width: 250px;
+  height: 250px;
+  background: linear-gradient(135deg, #66bb6a, #fdd835);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation-delay: -14s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(30px, -40px) scale(1.05); }
+  50% { transform: translate(-20px, 20px) scale(0.95); }
+  75% { transform: translate(15px, 30px) scale(1.02); }
+}
+
+/* ===== 动画 ===== */
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(76, 175, 80, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(76, 175, 80, 0.6); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
+.shake-anim {
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes score-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+
+.score-pop {
+  animation: score-pop 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* ===== 游戏面板 ===== */
+.game-panel {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+}
+
+.game-title {
+  background: linear-gradient(135deg, #4caf50, #2196f3, #ff9800);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+}
+
+/* ===== 难度按钮 ===== */
+.difficulty-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 20px;
+  border-radius: 16px;
+  border: 2px solid #e0e0e0;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 80px;
+}
+
+.difficulty-btn:hover {
+  border-color: #4caf50;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+}
+
+.difficulty-btn.active {
+  border-color: #4caf50;
+  background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+  box-shadow: 0 4px 16px rgba(76, 175, 80, 0.3);
+}
+
+.diff-emoji {
+  font-size: 1.5rem;
+}
+
+.diff-text {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #555;
+}
+
+.difficulty-btn.active .diff-text {
+  color: #2e7d32;
+}
+
+/* ===== 音效开关 ===== */
+.toggle-track {
+  display: inline-block;
+  width: 48px;
+  height: 26px;
+  background: #ccc;
+  border-radius: 13px;
+  position: relative;
+  transition: background 0.3s;
+  cursor: pointer;
+}
+
+#sound-toggle:checked ~ .toggle-track {
+  background: #4caf50;
+}
+
+.toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.3s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+#sound-toggle:checked ~ .toggle-track .toggle-thumb {
+  transform: translateX(22px);
+}
+
+/* ===== 开始按钮 ===== */
+.start-btn {
+  background: linear-gradient(135deg, #4caf50, #66bb6a);
+  color: white;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.start-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent, rgba(255,255,255,0.2));
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.start-btn:hover::after {
+  opacity: 1;
+}
+
+.start-btn:hover {
+  box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+}
+
+/* ===== 控制按钮 ===== */
+.control-btn {
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid #e0e0e0;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #555;
+}
+
+.control-btn:hover {
+  border-color: #4caf50;
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.control-btn:active {
+  transform: scale(0.95);
+}
+
+/* ===== 游戏HUD ===== */
+.game-hud {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+}
+
+/* ===== 画布容器 ===== */
+.canvas-wrapper {
+  background: #1a1a2e;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  position: relative;
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+#game-canvas {
+  display: block;
+}
+
+/* ===== 游戏结束面板 ===== */
+.gameover-panel {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* ===== 移动端方向键 ===== */
+.dpad-container {
+  display: grid;
+  grid-template-columns: repeat(3, 60px);
+  grid-template-rows: repeat(3, 60px);
+  gap: 6px;
+  justify-content: center;
+}
+
+.dpad-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  border: 2px solid #e0e0e0;
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  color: #555;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dpad-btn:active {
+  background: #4caf50;
+  color: white;
+  border-color: #4caf50;
+  transform: scale(0.9);
+}
+
+.dpad-up { grid-column: 2; grid-row: 1; }
+.dpad-left { grid-column: 1; grid-row: 2; }
+.dpad-center { grid-column: 2; grid-row: 2; background: #f5f5f5; border-color: #ddd; font-size: 1.5rem; }
+.dpad-right { grid-column: 3; grid-row: 2; }
+.dpad-down { grid-column: 2; grid-row: 3; }
+
+/* ===== 响应式 ===== */
+@media (max-width: 480px) {
+  .game-panel {
+    padding: 1.5rem;
+    gap: 1rem;
+  }
+  
+  .game-title {
+    font-size: 2rem;
+  }
+  
+  .difficulty-btn {
+    padding: 8px 14px;
+    min-width: 65px;
+  }
+  
+  .diff-emoji {
+    font-size: 1.2rem;
+  }
+  
+  .diff-text {
+    font-size: 0.75rem;
+  }
+  
+  .dpad-container {
+    grid-template-columns: repeat(3, 52px);
+    grid-template-rows: repeat(3, 52px);
+  }
+}
+
+/* ===== 食物动画粒子 ===== */
+.eat-particle {
+  position: absolute;
+  pointer-events: none;
+  font-size: 1.2rem;
+  animation: particle-fly 0.6s ease-out forwards;
+  z-index: 100;
+}
+
+@keyframes particle-fly {
+  0% { opacity: 1; transform: translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.3); }
+}
+
+/* ===== 新纪录标识 ===== */
+.new-record {
+  display: inline-block;
+  background: linear-gradient(135deg, #ff6f00, #ff4081);
+  color: white;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  animation: pulse-glow 1.5s ease-in-out infinite;
+  margin-left: 8px;
+}
