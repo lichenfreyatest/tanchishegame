@@ -1,19 +1,71 @@
+/* ===== 像素风字体引入 ===== */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap');
+
 /* ===== 全局基础样式 ===== */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  image-rendering: pixelated;
+}
+
+:root {
+  /* 超级玛丽经典配色 */
+  --mario-sky: #5C94FC;
+  --mario-sky-light: #7CB4FC;
+  --mario-sky-dark: #3C74DC;
+  --mario-red: #E40028;
+  --mario-red-dark: #A00018;
+  --mario-brick: #C84C0C;
+  --mario-brick-light: #E8A060;
+  --mario-brick-dark: #8C3800;
+  --mario-ground: #8C5010;
+  --mario-ground-dark: #5C3400;
+  --mario-pipe-green: #00A800;
+  --mario-pipe-dark: #005800;
+  --mario-pipe-light: #30D830;
+  --mario-coin: #FAC000;
+  --mario-coin-dark: #E8A028;
+  --mario-question: #FAC000;
+  --mario-question-dark: #C88000;
+  --mario-cloud: #FCF8FC;
+  --mario-white: #FCFCFC;
+  --mario-black: #000000;
+  --mario-blue: #0058F8;
+  --mario-brown-text: #5C3400;
+
+  /* UI映射 */
+  --arcade-bg: #5C94FC;
+  --arcade-dark: #3C74DC;
+  --arcade-panel: #E8A060;
+  --pixel-border: #8C3800;
+  --pixel-shadow: #5C3400;
+  --text-primary: #FCFCFC;
+  --text-dim: #3C74DC;
+  --neon-green: #00A800;
+  --neon-cyan: #5C94FC;
+  --neon-pink: #E40028;
+  --neon-yellow: #FAC000;
+  --neon-orange: #E8A060;
+  --neon-purple: #7C00A8;
+  --accent-yellow: #FAC000;
+  --accent-warm: #E8A060;
+  --border-highlight: #C84C0C;
 }
 
 body {
-  font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: linear-gradient(135deg, #e0f7fa 0%, #f3e5f5 50%, #fff3e0 100%);
+  font-family: 'ZCOOL KuaiLe', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--mario-sky);
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
+  color: var(--text-primary);
+  font-size: 16px;
+  line-height: 1.5;
 }
 
-/* ===== 背景装饰 ===== */
+/* ===== 超级玛丽天空背景 ===== */
 .bg-decoration {
   position: fixed;
   inset: 0;
@@ -22,132 +74,229 @@ body {
   overflow: hidden;
 }
 
-.bg-circle {
+/* 云朵装饰 */
+.bg-stars {
   position: absolute;
-  border-radius: 50%;
-  opacity: 0.15;
-  animation: float 20s ease-in-out infinite;
+  inset: 0;
+  background-image:
+    /* 云朵 - 用圆形模拟 */
+    radial-gradient(ellipse 80px 40px at 10% 15%, rgba(252, 248, 252, 0.9), transparent),
+    radial-gradient(ellipse 60px 30px at 12% 14%, rgba(252, 248, 252, 0.9), transparent),
+    radial-gradient(ellipse 100px 50px at 30% 25%, rgba(252, 248, 252, 0.85), transparent),
+    radial-gradient(ellipse 70px 35px at 28% 24%, rgba(252, 248, 252, 0.85), transparent),
+    radial-gradient(ellipse 90px 45px at 55% 10%, rgba(252, 248, 252, 0.9), transparent),
+    radial-gradient(ellipse 65px 32px at 57% 9%, rgba(252, 248, 252, 0.9), transparent),
+    radial-gradient(ellipse 110px 55px at 75% 30%, rgba(252, 248, 252, 0.8), transparent),
+    radial-gradient(ellipse 75px 38px at 73% 29%, rgba(252, 248, 252, 0.8), transparent),
+    radial-gradient(ellipse 70px 35px at 90% 18%, rgba(252, 248, 252, 0.85), transparent),
+    radial-gradient(ellipse 50px 25px at 92% 17%, rgba(252, 248, 252, 0.85), transparent);
+  animation: cloud-drift 20s ease-in-out infinite alternate;
 }
 
-.bg-circle-1 {
-  width: 400px;
-  height: 400px;
-  background: linear-gradient(135deg, #4fc3f7, #7c4dff);
-  top: -100px;
-  right: -100px;
-  animation-delay: 0s;
+@keyframes cloud-drift {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(20px); }
 }
 
-.bg-circle-2 {
-  width: 300px;
-  height: 300px;
-  background: linear-gradient(135deg, #ff6f00, #ff4081);
-  bottom: -80px;
-  left: -80px;
-  animation-delay: -7s;
+/* 砖块地面 */
+.bg-grid {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--mario-brick) 0px,
+      var(--mario-brick) 38px,
+      var(--mario-brick-dark) 38px,
+      var(--mario-brick-dark) 40px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      var(--mario-brick) 0px,
+      var(--mario-brick) 18px,
+      var(--mario-brick-dark) 18px,
+      var(--mario-brick-dark) 20px
+    );
+  border-top: 4px solid var(--mario-brick-dark);
 }
 
-.bg-circle-3 {
-  width: 250px;
-  height: 250px;
-  background: linear-gradient(135deg, #66bb6a, #fdd835);
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  animation-delay: -14s;
-}
-
-@keyframes float {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  25% { transform: translate(30px, -40px) scale(1.05); }
-  50% { transform: translate(-20px, 20px) scale(0.95); }
-  75% { transform: translate(15px, 30px) scale(1.02); }
+/* 山丘装饰替代扫描线 */
+.bg-scanlines {
+  position: absolute;
+  bottom: 80px;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background:
+    /* 小山丘 */
+    radial-gradient(ellipse 200px 100px at 15% 100%, #00A800, transparent),
+    radial-gradient(ellipse 300px 120px at 50% 100%, #00A800, transparent),
+    radial-gradient(ellipse 180px 90px at 80% 100%, #00A800, transparent),
+    /* 灌木 */
+    radial-gradient(ellipse 60px 40px at 25% 95%, #30D830, transparent),
+    radial-gradient(ellipse 80px 50px at 65% 95%, #30D830, transparent);
+  pointer-events: none;
 }
 
 /* ===== 动画 ===== */
-@keyframes bounce-slow {
+@keyframes pixel-bounce {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-12px); }
+  50% { transform: translateY(-8px); }
 }
 
 .animate-bounce-slow {
-  animation: bounce-slow 2s ease-in-out infinite;
+  animation: pixel-bounce 1.5s steps(6) infinite;
 }
 
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(76, 175, 80, 0.3); }
-  50% { box-shadow: 0 0 40px rgba(76, 175, 80, 0.6); }
+@keyframes coin-shine {
+  0%, 100% {
+    text-shadow: 0 0 6px rgba(250, 192, 0, 0.6), 2px 2px 0 #8C3800;
+  }
+  50% {
+    text-shadow: 0 0 12px rgba(250, 192, 0, 0.9), 2px 2px 0 #8C3800;
+  }
+}
+
+@keyframes border-glow {
+  0%, 100% {
+    box-shadow:
+      inset 0 0 10px rgba(250, 192, 0, 0.1),
+      0 0 6px rgba(200, 76, 12, 0.2),
+      4px 4px 0 var(--pixel-shadow);
+  }
+  50% {
+    box-shadow:
+      inset 0 0 10px rgba(250, 192, 0, 0.2),
+      0 0 10px rgba(200, 76, 12, 0.3),
+      4px 4px 0 var(--pixel-shadow);
+  }
 }
 
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
-  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
-  20%, 40%, 60%, 80% { transform: translateX(4px); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-3px); }
+  20%, 40%, 60%, 80% { transform: translateX(3px); }
 }
 
 .shake-anim {
-  animation: shake 0.5s ease-in-out;
+  animation: shake 0.5s steps(8);
 }
 
 @keyframes score-pop {
   0% { transform: scale(1); }
-  50% { transform: scale(1.4); }
+  50% { transform: scale(1.4); color: var(--mario-coin); }
   100% { transform: scale(1); }
 }
 
 .score-pop {
-  animation: score-pop 0.3s ease-out;
+  animation: score-pop 0.3s steps(4);
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.9) translateY(20px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .fade-in {
-  animation: fadeIn 0.4s ease-out;
+  animation: fadeIn 0.3s steps(6);
 }
 
-/* ===== 游戏面板 ===== */
+@keyframes question-block-pulse {
+  0%, 100% { background-color: #FAC000; }
+  50% { background-color: #E8A028; }
+}
+
+/* ===== 游戏面板 - 问号砖块风格 ===== */
 .game-panel {
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(20px);
-  border: 2px solid rgba(255, 255, 255, 0.6);
+  background: var(--mario-brick-light);
+  border: 4px solid var(--mario-brick-dark);
+  box-shadow:
+    0 0 0 2px var(--mario-brick),
+    inset 0 0 15px rgba(140, 56, 0, 0.2),
+    6px 6px 0 var(--pixel-shadow);
+  animation: border-glow 4s ease-in-out infinite;
+  position: relative;
 }
 
+/* 面板顶部砖块纹理 */
+.game-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--mario-coin) 0px,
+    var(--mario-coin) 12px,
+    var(--mario-coin-dark) 12px,
+    var(--mario-coin-dark) 14px
+  );
+}
+
+/* 标题 - 金币色 */
 .game-title {
-  background: linear-gradient(135deg, #4caf50, #2196f3, #ff9800);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: none;
+  font-family: 'ZCOOL KuaiLe', cursive;
+  color: var(--mario-white);
+  text-shadow: 0 0 6px rgba(250, 192, 0, 0.6), 3px 3px 0 var(--mario-brick-dark);
+  animation: coin-shine 3s ease-in-out infinite;
+  font-size: 2.2rem !important;
+  line-height: 1.4;
+  letter-spacing: 4px;
 }
 
-/* ===== 难度按钮 ===== */
+.game-subtitle {
+  color: var(--mario-coin);
+  font-family: 'ZCOOL KuaiLe', cursive;
+  text-shadow: 2px 2px 0 var(--mario-brick-dark);
+  font-size: 1.1rem;
+  letter-spacing: 3px;
+}
+
+/* ===== 难度按钮 - 砖块风格 ===== */
 .difficulty-btn {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  padding: 12px 20px;
-  border-radius: 16px;
-  border: 2px solid #e0e0e0;
-  background: white;
+  padding: 10px 16px;
+  border-radius: 0;
+  border: 3px solid var(--mario-brick-dark);
+  background: var(--mario-brick);
   cursor: pointer;
-  transition: all 0.3s ease;
-  min-width: 80px;
+  transition: all 0.1s steps(2);
+  min-width: 76px;
+  color: var(--mario-white);
+  box-shadow: 3px 3px 0 var(--pixel-shadow);
+  position: relative;
 }
 
 .difficulty-btn:hover {
-  border-color: #4caf50;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+  border-color: var(--mario-coin);
+  color: var(--mario-coin);
+  background: var(--mario-brick-light);
+  box-shadow: 3px 3px 0 var(--pixel-shadow), 0 0 8px rgba(250, 192, 0, 0.3);
+  transform: translate(-1px, -1px);
 }
 
 .difficulty-btn.active {
-  border-color: #4caf50;
-  background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
-  box-shadow: 0 4px 16px rgba(76, 175, 80, 0.3);
+  border-color: var(--mario-coin);
+  background: var(--mario-question-dark);
+  color: var(--mario-white);
+  box-shadow: 3px 3px 0 var(--pixel-shadow), 0 0 10px rgba(250, 192, 0, 0.3);
+}
+
+.difficulty-btn.active::after {
+  content: '★';
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  font-size: 0.5rem;
+  color: var(--mario-coin);
 }
 
 .diff-emoji {
@@ -155,126 +304,219 @@ body {
 }
 
 .diff-text {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 700;
-  color: #555;
-}
-
-.difficulty-btn.active .diff-text {
-  color: #2e7d32;
+  font-family: 'ZCOOL KuaiLe', cursive;
 }
 
 /* ===== 音效开关 ===== */
 .toggle-track {
   display: inline-block;
-  width: 48px;
-  height: 26px;
-  background: #ccc;
-  border-radius: 13px;
+  width: 44px;
+  height: 22px;
+  background: var(--mario-brick-dark);
+  border: 2px solid var(--mario-ground-dark);
+  border-radius: 0;
   position: relative;
-  transition: background 0.3s;
+  transition: background 0.1s steps(2);
   cursor: pointer;
+  box-shadow: 2px 2px 0 var(--pixel-shadow);
 }
 
 #sound-toggle:checked ~ .toggle-track {
-  background: #4caf50;
+  background: var(--mario-pipe-green);
+  border-color: var(--mario-pipe-dark);
 }
 
 .toggle-thumb {
   position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 20px;
-  height: 20px;
-  background: white;
-  border-radius: 50%;
-  transition: transform 0.3s;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  background: var(--mario-brick-light);
+  border-radius: 0;
+  transition: transform 0.1s steps(3);
+  box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
 }
 
 #sound-toggle:checked ~ .toggle-track .toggle-thumb {
   transform: translateX(22px);
+  background: var(--mario-pipe-light);
+  box-shadow: 0 0 6px rgba(0, 168, 0, 0.4);
 }
 
-/* ===== 开始按钮 ===== */
+/* ===== 开始按钮 - 管道绿色 ===== */
 .start-btn {
-  background: linear-gradient(135deg, #4caf50, #66bb6a);
-  color: white;
-  border: none;
+  background: var(--mario-pipe-green);
+  color: var(--mario-white);
+  border: 3px solid var(--mario-pipe-dark);
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  font-family: 'ZCOOL KuaiLe', cursive;
+  font-size: 1.1rem;
+  box-shadow:
+    4px 4px 0 var(--pixel-shadow),
+    0 0 10px rgba(0, 168, 0, 0.2);
+  border-radius: 0 !important;
+  text-shadow: 2px 2px 0 var(--mario-pipe-dark);
+  transition: all 0.1s steps(2);
+  letter-spacing: 2px;
 }
 
 .start-btn::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, transparent, rgba(255,255,255,0.2));
+  background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.1));
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.1s;
+}
+
+.start-btn:hover {
+  background: var(--mario-pipe-light);
+  box-shadow:
+    4px 4px 0 var(--pixel-shadow),
+    0 0 16px rgba(0, 168, 0, 0.35);
+  transform: translate(-1px, -1px);
 }
 
 .start-btn:hover::after {
   opacity: 1;
 }
 
-.start-btn:hover {
-  box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+.start-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--pixel-shadow);
 }
 
-/* ===== 控制按钮 ===== */
+/* ===== 控制按钮 - 砖块风格 ===== */
 .control-btn {
-  background: rgba(255, 255, 255, 0.9);
-  border: 2px solid #e0e0e0;
+  background: var(--mario-brick);
+  border: 2px solid var(--mario-brick-dark);
   cursor: pointer;
-  transition: all 0.2s;
-  color: #555;
+  transition: all 0.1s steps(2);
+  color: var(--mario-white);
+  font-family: 'ZCOOL KuaiLe', cursive;
+  font-size: 0.95rem;
+  border-radius: 0 !important;
+  box-shadow: 3px 3px 0 var(--pixel-shadow);
 }
 
 .control-btn:hover {
-  border-color: #4caf50;
-  background: #e8f5e9;
-  color: #2e7d32;
+  border-color: var(--mario-coin);
+  color: var(--mario-coin);
+  background: var(--mario-brick-light);
+  box-shadow: 3px 3px 0 var(--pixel-shadow), 0 0 8px rgba(250, 192, 0, 0.2);
 }
 
 .control-btn:active {
-  transform: scale(0.95);
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--pixel-shadow);
 }
 
-/* ===== 游戏HUD ===== */
+/* ===== 游戏HUD - 问号砖块风格 ===== */
 .game-hud {
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(10px);
-  border: 2px solid rgba(255, 255, 255, 0.6);
+  background: var(--mario-brick);
+  border: 3px solid var(--mario-brick-dark);
+  border-radius: 0 !important;
+  box-shadow: 4px 4px 0 var(--pixel-shadow);
+  font-family: 'ZCOOL KuaiLe', cursive;
+  font-size: 1rem;
+  position: relative;
 }
 
-/* ===== 画布容器 ===== */
+/* ===== 画布容器 - 管道边框 ===== */
 .canvas-wrapper {
-  background: #1a1a2e;
-  border: 4px solid rgba(255, 255, 255, 0.3);
+  background: #5C94FC;
+  border: 5px solid var(--mario-pipe-dark);
+  border-radius: 0 !important;
   position: relative;
-  animation: pulse-glow 3s ease-in-out infinite;
+  box-shadow:
+    0 0 0 2px var(--mario-pipe-green),
+    inset 0 0 15px rgba(0, 0, 0, 0.2),
+    6px 6px 0 var(--pixel-shadow);
+}
+
+/* 管道装饰顶部 */
+.canvas-wrapper::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  right: -8px;
+  height: 8px;
+  background: var(--mario-pipe-green);
+  border: 2px solid var(--mario-pipe-dark);
+  border-bottom: none;
+  z-index: 3;
+}
+
+/* 去掉CRT扫描线，改为轻微像素网格 */
+.canvas-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0, 0, 0, 0.02) 3px,
+    rgba(0, 0, 0, 0.02) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
 }
 
 #game-canvas {
   display: block;
 }
 
-/* ===== 游戏结束面板 ===== */
-.gameover-panel {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  border: 2px solid rgba(255, 255, 255, 0.6);
-  animation: fadeIn 0.4s ease-out;
+/* ===== 暂停覆盖层 ===== */
+#pause-overlay {
+  border-radius: 0 !important;
+  z-index: 2;
+  background: rgba(92, 148, 252, 0.92) !important;
 }
 
-/* ===== 移动端方向键 ===== */
+/* ===== 游戏结束面板 ===== */
+.gameover-panel {
+  background: var(--mario-brick-light);
+  border: 4px solid var(--mario-red);
+  border-radius: 0 !important;
+  box-shadow:
+    0 0 0 2px var(--mario-red-dark),
+    0 0 12px rgba(228, 0, 40, 0.2),
+    6px 6px 0 var(--pixel-shadow);
+  animation: fadeIn 0.3s steps(6);
+}
+
+.gameover-panel h2 {
+  font-family: 'ZCOOL KuaiLe', cursive;
+  color: var(--mario-red) !important;
+  text-shadow: 3px 3px 0 var(--mario-red-dark);
+  font-size: 1.8rem !important;
+}
+
+.gameover-panel .bg-gray-100 {
+  background: var(--mario-brick) !important;
+  border: 2px solid var(--mario-brick-dark);
+  border-radius: 0 !important;
+}
+
+.gameover-panel .text-gray-500 {
+  color: var(--mario-brick-light) !important;
+  font-family: 'ZCOOL KuaiLe', cursive;
+  font-size: 1rem;
+}
+
+/* ===== 移动端方向键 - 红色按钮风格 ===== */
 .dpad-container {
   display: grid;
-  grid-template-columns: repeat(3, 60px);
-  grid-template-rows: repeat(3, 60px);
-  gap: 6px;
+  grid-template-columns: repeat(3, 56px);
+  grid-template-rows: repeat(3, 56px);
+  gap: 4px;
   justify-content: center;
 }
 
@@ -282,26 +524,35 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 14px;
-  border: 2px solid #e0e0e0;
-  background: rgba(255, 255, 255, 0.9);
-  font-size: 1.2rem;
+  border-radius: 0;
+  border: 3px solid var(--mario-brick-dark);
+  background: var(--mario-red);
+  font-size: 1.1rem;
   cursor: pointer;
-  transition: all 0.15s;
-  color: #555;
+  transition: all 0.05s steps(2);
+  color: var(--mario-white);
   -webkit-tap-highlight-color: transparent;
+  box-shadow: 2px 2px 0 var(--pixel-shadow);
 }
 
-.dpad-btn:active {
-  background: #4caf50;
-  color: white;
-  border-color: #4caf50;
-  transform: scale(0.9);
+.dpad-btn:active,
+.dpad-btn.dpad-active {
+  background: var(--mario-red-dark);
+  color: var(--mario-coin);
+  border-color: var(--mario-coin);
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--pixel-shadow);
 }
 
 .dpad-up { grid-column: 2; grid-row: 1; }
 .dpad-left { grid-column: 1; grid-row: 2; }
-.dpad-center { grid-column: 2; grid-row: 2; background: #f5f5f5; border-color: #ddd; font-size: 1.5rem; }
+.dpad-center {
+  grid-column: 2;
+  grid-row: 2;
+  background: var(--mario-brick);
+  border-color: var(--mario-brick-dark);
+  font-size: 1.3rem;
+}
 .dpad-right { grid-column: 3; grid-row: 2; }
 .dpad-down { grid-column: 2; grid-row: 3; }
 
@@ -311,27 +562,27 @@ body {
     padding: 1.5rem;
     gap: 1rem;
   }
-  
+
   .game-title {
-    font-size: 2rem;
+    font-size: 1.6rem !important;
   }
-  
+
   .difficulty-btn {
-    padding: 8px 14px;
-    min-width: 65px;
+    padding: 8px 12px;
+    min-width: 62px;
   }
-  
+
   .diff-emoji {
     font-size: 1.2rem;
   }
-  
+
   .diff-text {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
   }
-  
+
   .dpad-container {
-    grid-template-columns: repeat(3, 52px);
-    grid-template-rows: repeat(3, 52px);
+    grid-template-columns: repeat(3, 50px);
+    grid-template-rows: repeat(3, 50px);
   }
 }
 
@@ -339,25 +590,109 @@ body {
 .eat-particle {
   position: absolute;
   pointer-events: none;
-  font-size: 1.2rem;
-  animation: particle-fly 0.6s ease-out forwards;
+  font-size: 1rem;
+  animation: particle-fly 0.5s steps(8) forwards;
   z-index: 100;
 }
 
 @keyframes particle-fly {
   0% { opacity: 1; transform: translate(0, 0) scale(1); }
-  100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.3); }
+  100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.2); }
 }
 
 /* ===== 新纪录标识 ===== */
 .new-record {
   display: inline-block;
-  background: linear-gradient(135deg, #ff6f00, #ff4081);
-  color: white;
-  padding: 2px 10px;
-  border-radius: 20px;
-  font-size: 0.75rem;
+  background: var(--mario-coin);
+  color: var(--mario-brick-dark);
+  padding: 2px 8px;
+  border-radius: 0;
+  font-size: 0.8rem;
   font-weight: bold;
-  animation: pulse-glow 1.5s ease-in-out infinite;
-  margin-left: 8px;
+  font-family: 'ZCOOL KuaiLe', cursive;
+  border: 2px solid var(--mario-coin-dark);
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+  margin-left: 6px;
+  animation: pixel-bounce 1s steps(4) infinite;
+}
+
+/* ===== 街机装饰条 - 玛丽彩虹砖块 ===== */
+.arcade-stripe {
+  height: 6px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--mario-red) 0px,
+    var(--mario-red) 10px,
+    var(--mario-coin) 10px,
+    var(--mario-coin) 20px,
+    var(--mario-pipe-green) 20px,
+    var(--mario-pipe-green) 30px,
+    var(--mario-sky) 30px,
+    var(--mario-sky) 40px,
+    var(--mario-brick) 40px,
+    var(--mario-brick) 50px
+  );
+  opacity: 0.8;
+}
+
+/* ===== 像素风分隔线 - 砖块纹理 ===== */
+.pixel-divider {
+  height: 4px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--mario-brick-dark) 0px,
+    var(--mario-brick-dark) 6px,
+    var(--mario-brick-light) 6px,
+    var(--mario-brick-light) 8px
+  );
+  margin: 8px 0;
+}
+
+/* ===== 玛丽风格文字工具类 ===== */
+.neon-text-green {
+  color: var(--mario-pipe-green);
+  text-shadow: 2px 2px 0 var(--mario-pipe-dark);
+}
+
+.neon-text-cyan {
+  color: var(--mario-white);
+  text-shadow: 2px 2px 0 var(--mario-sky-dark);
+}
+
+.neon-text-pink {
+  color: var(--mario-red);
+  text-shadow: 2px 2px 0 var(--mario-red-dark);
+}
+
+.neon-text-yellow {
+  color: var(--mario-coin);
+  text-shadow: 2px 2px 0 var(--mario-coin-dark);
+}
+
+/* ===== 页脚 ===== */
+footer p {
+  color: var(--mario-white);
+  font-family: 'ZCOOL KuaiLe', cursive;
+  font-size: 0.85rem;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+footer a {
+  color: var(--mario-coin) !important;
+  text-shadow: 1px 1px 0 var(--mario-coin-dark);
+}
+
+/* ===== INSERT COIN 闪烁 ===== */
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.blink-text {
+  animation: blink 1s steps(1) infinite;
+}
+
+/* ===== 隐藏类 ===== */
+.hidden {
+  display: none !important;
 }

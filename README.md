@@ -1,2 +1,0 @@
-# tanchishegame
-testgame

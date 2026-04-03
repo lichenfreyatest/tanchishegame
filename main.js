@@ -223,8 +223,8 @@ const keyMap = {
 };
 
 document.addEventListener('keydown', (e) => {
-  // 空格键暂停/继续
-  if (e.code === 'Space' && game && game.isRunning || (game && game.isPaused)) {
+  // 空格键暂停/继续（修复运算符优先级）
+  if (e.code === 'Space' && game && (game.isRunning || game.isPaused)) {
     e.preventDefault();
     pauseBtn.click();
     return;
@@ -238,33 +238,95 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-// ===== 触摸手势控制 =====
+// ===== 触摸手势控制（优化版） =====
+// 触摸状态管理
 let touchStartX = 0;
 let touchStartY = 0;
-let touchStartTime = 0;
+let touchId = null;           // 追踪触摸ID，防止多指干扰
+let hasSwiped = false;        // 本次触摸是否已触发过滑动
+let lastSwipeTime = 0;        // 上次滑动时间，用于防抖
 
-canvas.addEventListener('touchstart', (e) => {
+// 将触摸监听扩展到整个游戏界面（而非仅canvas）
+const touchTarget = gameScreen;
+
+touchTarget.addEventListener('touchstart', (e) => {
+  // 如果触摸在按钮上则不拦截
+  if (e.target.closest('.control-btn') || e.target.closest('.dpad-btn')) return;
+  
   e.preventDefault();
   const touch = e.touches[0];
   touchStartX = touch.clientX;
   touchStartY = touch.clientY;
-  touchStartTime = Date.now();
+  touchId = touch.identifier;
+  hasSwiped = false;
 }, { passive: false });
 
-canvas.addEventListener('touchend', (e) => {
+// 核心优化：在touchmove中实时检测方向，无需等手指抬起
+touchTarget.addEventListener('touchmove', (e) => {
+  if (e.target.closest('.control-btn') || e.target.closest('.dpad-btn')) return;
   e.preventDefault();
   if (!game || !game.isRunning || game.isPaused) return;
 
-  const touch = e.changedTouches[0];
+  // 找到对应的触摸点
+  let touch = null;
+  for (let i = 0; i < e.changedTouches.length; i++) {
+    if (e.changedTouches[i].identifier === touchId) {
+      touch = e.changedTouches[i];
+      break;
+    }
+  }
+  if (!touch) return;
+
   const dx = touch.clientX - touchStartX;
   const dy = touch.clientY - touchStartY;
-  const dt = Date.now() - touchStartTime;
+  const now = Date.now();
 
-  // 最小滑动距离和最大时间
-  const minDist = 20;
-  const maxTime = 500;
+  // 降低最小滑动距离阈值，提升灵敏度
+  const minDist = 10;
+  // 防抖：两次方向变化间隔至少50ms
+  const swipeCooldown = 50;
 
-  if (dt > maxTime) return;
+  if (now - lastSwipeTime < swipeCooldown) return;
+  if (Math.abs(dx) < minDist && Math.abs(dy) < minDist) return;
+
+  let dir;
+  if (Math.abs(dx) > Math.abs(dy)) {
+    dir = dx > 0 ? DIR.RIGHT : DIR.LEFT;
+  } else {
+    dir = dy > 0 ? DIR.DOWN : DIR.UP;
+  }
+
+  game.setDirection(dir);
+  audio.playTurnSound();
+  
+  // 重置起点，支持连续滑动转向（如L形、U形手势）
+  touchStartX = touch.clientX;
+  touchStartY = touch.clientY;
+  lastSwipeTime = now;
+  hasSwiped = true;
+}, { passive: false });
+
+// touchend 作为补充：处理快速轻扫（tap-swipe）
+touchTarget.addEventListener('touchend', (e) => {
+  if (e.target.closest('.control-btn') || e.target.closest('.dpad-btn')) return;
+  e.preventDefault();
+  if (hasSwiped) return; // 已在touchmove中处理过
+  if (!game || !game.isRunning || game.isPaused) return;
+
+  let touch = null;
+  for (let i = 0; i < e.changedTouches.length; i++) {
+    if (e.changedTouches[i].identifier === touchId) {
+      touch = e.changedTouches[i];
+      break;
+    }
+  }
+  if (!touch) return;
+
+  const dx = touch.clientX - touchStartX;
+  const dy = touch.clientY - touchStartY;
+
+  // 快速轻扫的最小距离更小
+  const minDist = 8;
   if (Math.abs(dx) < minDist && Math.abs(dy) < minDist) return;
 
   let dir;
@@ -278,7 +340,7 @@ canvas.addEventListener('touchend', (e) => {
   audio.playTurnSound();
 }, { passive: false });
 
-// ===== 移动端虚拟方向键 =====
+// ===== 移动端虚拟方向键（优化版） =====
 const dirMap = {
   'up': DIR.UP,
   'down': DIR.DOWN,
@@ -287,8 +349,9 @@ const dirMap = {
 };
 
 dpadBtns.forEach(btn => {
-  const handler = (e) => {
-    e.preventDefault();
+  let repeatTimer = null;
+
+  const triggerDir = () => {
     if (!game || !game.isRunning || game.isPaused) return;
     const dir = dirMap[btn.dataset.dir];
     if (dir) {
@@ -296,8 +359,34 @@ dpadBtns.forEach(btn => {
       audio.playTurnSound();
     }
   };
-  btn.addEventListener('touchstart', handler, { passive: false });
-  btn.addEventListener('mousedown', handler);
+
+  const startHandler = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    triggerDir();
+    // 长按连续触发（200ms后开始，每100ms一次）
+    clearInterval(repeatTimer);
+    repeatTimer = setTimeout(() => {
+      repeatTimer = setInterval(triggerDir, 100);
+    }, 200);
+    // 添加按下视觉反馈
+    btn.classList.add('dpad-active');
+  };
+
+  const endHandler = (e) => {
+    e.preventDefault();
+    clearInterval(repeatTimer);
+    clearTimeout(repeatTimer);
+    repeatTimer = null;
+    btn.classList.remove('dpad-active');
+  };
+
+  btn.addEventListener('touchstart', startHandler, { passive: false });
+  btn.addEventListener('mousedown', startHandler);
+  btn.addEventListener('touchend', endHandler, { passive: false });
+  btn.addEventListener('touchcancel', endHandler, { passive: false });
+  btn.addEventListener('mouseup', endHandler);
+  btn.addEventListener('mouseleave', endHandler);
 });
 
 // ===== 窗口大小变化 =====
